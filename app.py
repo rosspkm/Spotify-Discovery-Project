@@ -52,6 +52,7 @@ def index():
         "song_image_url": song_image_url,
         "preview_url": preview_url,
         "genius_url": genius_url,
+        "artists": artist_ids,
     }
 
     return flask.render_template(
