@@ -2,7 +2,7 @@ from dotenv import load_dotenv, find_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import flask
 import os
-from flask_login import login_user, current_user, LoginManager, UserMixin
+from flask_login import LoginManager
 
 load_dotenv(find_dotenv())
 

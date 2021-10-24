@@ -1,16 +1,12 @@
 import React from 'react';
 
 export default function Artist({ artist, delArtist }) {
-    function handleClick() {
-        delArtist(artist.id)
-    }
-
     return (
         <div>
             <label>
-                {artist.name}
+                {artist.id}
             </label>
-            <button onClick={handleClick}> delete artist </button>
+            <button onClick={() => delArtist(artist.id)}>delete artist</button>
         </div>
 
     );

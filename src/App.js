@@ -1,6 +1,6 @@
 import './App.css';
-import Display_Music from './components/display_song';
-import Save_Music from './components/save_music';
+import Display_Music from './components/displaySong';
+import Save_Music from './components/saveMusic';
 import React from 'react';
 
 function App() {
@@ -19,10 +19,10 @@ function App() {
   //     </ul>
   //   {% endif %}
   // {% endwith %}
+  console.log("in the app.js")
   return (
-
-
     <div>
+      <h1>TEST</h1>
       <Display_Music args={args} />
       <Save_Music artists={args.artists} />
     </div>

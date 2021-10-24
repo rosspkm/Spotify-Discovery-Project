@@ -67,7 +67,7 @@ app.register_blueprint(bp)
 @app.route("/")
 def main():
     if current_user.is_authenticated:
-        return flask.redirect(flask.url_for("index"))
+        return flask.redirect(flask.url_for("bp.index"))
     return flask.redirect(flask.url_for("login"))
 
 
@@ -101,7 +101,7 @@ def login_post():
     user = User.query.filter_by(username=username).first()
     if user:
         login_user(user)
-        return flask.redirect(flask.url_for("index"))
+        return flask.redirect(flask.url_for("bp.index"))
 
     else:
         return flask.jsonify({"status": 401, "reason": "Username or Password Error"})
@@ -109,18 +109,20 @@ def login_post():
 
 @app.route("/save", methods=["POST"])
 def save():
-    artist_id = flask.request.form.get("artist_id")
-    try:
-        access_token = get_access_token()
-        get_song_data(artist_id, access_token)
-    except Exception:
-        flask.flash("Invalid artist ID entered")
-        return flask.redirect(flask.url_for("index"))
+    artists = flask.request.form.get("artists")
+
+    for artist in artists:
+        try:
+            access_token = get_access_token()
+            get_song_data(artist, access_token)
+        except Exception:
+            flask.flash("Invalid artist ID entered")
+            return flask.redirect(flask.url_for("bp.index"))
 
     username = current_user.username
-    db.session.add(Artist(artist_id=artist_id, username=username))
+    db.session.add(Artist(artist_id=artist, username=username))
     db.session.commit()
-    return flask.redirect(flask.url_for("index"))
+    return flask.redirect(flask.url_for("bp.index"))
 
 
 def get_access_token():
