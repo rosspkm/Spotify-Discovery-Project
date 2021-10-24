@@ -20,7 +20,7 @@ function Save_Music(artists) {
 
 
     function handleAddArtist(e) {
-        setArtists([...artists, { id: artist }]);
+        setArtists([...artists, artist]);
     }
 
     function delArtist(id) {
