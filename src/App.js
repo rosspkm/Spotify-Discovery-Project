@@ -1,12 +1,14 @@
 import './App.css';
 import Display_Music from './components/displaySong';
 import Save_Music from './components/saveMusic';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
-  // fetches JSON data passed in by flask.render_template and loaded
-  // in public/index.html in the script with id "data"
-  const args = JSON.parse(document.getElementById("data").text);
+  const [args, setArgs] = useState({ artists: [] });
+  useEffect(() => {
+    axios.get("/index").then(({ data }) => setArgs(data));
+  }, []) // empty so this useEffect only works on app load instead of every rerender
 
 
   // TODO: Implement your main page as a React component.
