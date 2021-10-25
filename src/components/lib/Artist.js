@@ -4,9 +4,9 @@ export default function Artist({ artist, delArtist }) {
     return (
         <div>
             <label>
-                {artist.id}
+                {artist}
             </label>
-            <button onClick={() => delArtist(artist.id)}>delete artist</button>
+            <button onClick={() => delArtist(artist)}>delete artist</button>
         </div>
 
     );

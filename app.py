@@ -5,7 +5,6 @@ from flask_login.utils import login_required
 import os
 import json
 import random
-import base64
 import requests
 
 from svr.models import User, Artist
@@ -24,6 +23,17 @@ ARTIST_IDS = [
 @bp.route("/index")
 @login_required
 def index():
+
+    return flask.render_template(
+        "index.html",
+    )
+
+
+app.register_blueprint(bp)
+
+
+@app.route("/load_data", methods=["POST"])
+def load_data():
     artists = Artist.query.filter_by(username=current_user.username).all()
     artist_ids = [a.artist_id for a in artists]
     has_artists_saved = len(artist_ids) > 0
@@ -54,14 +64,7 @@ def index():
         "genius_url": genius_url,
         "artists": artist_ids,
     }
-
-    return flask.render_template(
-        "index.html",
-        data=json.dumps(DATA),
-    )
-
-
-app.register_blueprint(bp)
+    return json.dumps(DATA)
 
 
 @app.route("/")
@@ -109,7 +112,8 @@ def login_post():
 
 @app.route("/save", methods=["POST"])
 def save():
-    artists = flask.request.form.get("artists")
+
+    artists = flask.request.json["artists"]
 
     for artist in artists:
         try:
@@ -117,28 +121,27 @@ def save():
             get_song_data(artist, access_token)
         except Exception:
             flask.flash("Invalid artist ID entered")
-            return flask.redirect(flask.url_for("bp.index"))
+            return artist
 
-    username = current_user.username
-    db.session.add(Artist(artist_id=artist, username=username))
-    db.session.commit()
-    return flask.redirect(flask.url_for("bp.index"))
+        username = current_user.username
+        artist_ids = Artist.query.filter_by(username=current_user.username).all()
+        artist_ids = [a for a in artist_ids]
+        if artist not in artist_ids:
+            db.session.add(Artist(artist_id=artist, username=username))
+            db.session.commit()
+    return ""
 
 
 def get_access_token():
-    auth = base64.standard_b64encode(
-        bytes(
-            f"{os.getenv('SPOTIFY_CLIENT_ID')}:{os.getenv('SPOTIFY_CLIENT_SECRET')}",
-            "utf-8",
-        )
-    ).decode("utf-8")
     response = requests.post(
         "https://accounts.spotify.com/api/token",
-        headers={"Authorization": f"Basic {auth}"},
-        data={"grant_type": "client_credentials"},
+        {
+            "grant_type": "client_credentials",
+            "client_id": os.getenv("CLIENT_ID"),
+            "client_secret": os.getenv("CLIENT_SECRET"),
+        },
     )
-    json_response = response.json()
-    return json_response["access_token"]
+    return response.json()["access_token"]
 
 
 @login_manager.user_loader

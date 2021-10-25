@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ArtistList from './lib/ArtistList.js';
 import axios from 'axios';
 
-function Save_Music(artists) {
+function Save_Music({ artists }) {
     const [artistlst, setArtists] = useState(artists || []);
     const [artist, setArtist] = useState('');
 
@@ -15,27 +15,27 @@ function Save_Music(artists) {
     }, [])
 
     useEffect(() => {
+        setArtists(artists);
+    }, [artists])
+
+    useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(artistlst));
     }, [artistlst]);
 
 
-    function handleAddArtist(e) {
+    function handleAddArtist() {
         setArtists([...artists, artist]);
     }
 
     function delArtist(id) {
-        setArtists(artistlst.filter((artist) => artist.id !== id));
+        setArtists(artistlst.filter((artist) => artist !== id));
     }
 
-    function sendData(body) {
-        return (
-            async () => {
-                const { data } = await axios.post("/save", { artists: body });
-                return data;
-            })
+    async function sendData(body) {
+        const { data } = await axios.post("/save", { artists: body });
+        return data;
     }
 
-    console.log(artistlst)
     return (
 
         < div >
@@ -43,7 +43,7 @@ function Save_Music(artists) {
             <button onClick={handleAddArtist}>Add Artist</button>
             <ArtistList artists={artistlst} delArtist={delArtist} />
             <div> number of artists selected</div>
-            <button onClick={sendData(artistlst)}>Submit</button>
+            <button onClick={() => { sendData(artistlst) }}>Submit</button>
         </div >
     );
 }

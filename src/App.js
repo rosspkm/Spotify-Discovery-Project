@@ -7,7 +7,7 @@ import axios from 'axios';
 function App() {
   const [args, setArgs] = useState({ artists: [] });
   useEffect(() => {
-    axios.get("/index").then(({ data }) => setArgs(data));
+    axios.post("/load_data", {}).then(({ data }) => setArgs(data));
   }, []) // empty so this useEffect only works on app load instead of every rerender
 
 
@@ -21,10 +21,8 @@ function App() {
   //     </ul>
   //   {% endif %}
   // {% endwith %}
-  console.log("in the app.js")
   return (
     <div>
-      <h1>TEST</h1>
       <Display_Music args={args} />
       <Save_Music artists={args.artists} />
     </div>

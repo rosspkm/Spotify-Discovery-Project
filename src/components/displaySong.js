@@ -1,7 +1,7 @@
 import React from "react";
 
-function Display_Music(args) {
-    if (args.has_artists_saved && args.has_artists_saved.length() > 0) {
+function Display_Music({ args }) {
+    if (args.has_artists_saved = true) {
         return (
             <div>
                 <h1>Song Explorer</h1>
