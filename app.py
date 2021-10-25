@@ -36,7 +36,6 @@ app.register_blueprint(bp)
 def load_data():
     artist_ids = User.query.filter_by(username=current_user.username).first().artists
     has_artists_saved = len(artist_ids) > 0 or False
-    print(has_artists_saved)
     if has_artists_saved:
         artist_id = random.choice(artist_ids)
 
@@ -121,11 +120,11 @@ def save():
             get_song_data(artist, access_token)
         except Exception:
             flask.flash("Invalid artist ID entered")
-            return artist
+            return "Invalid ID"
 
     User.query.filter_by(username=current_user.username).update({"artists": artists})
     db.session.commit()
-    return flask.redirect(flask.url_for("bp.index"))
+    return load_data()
 
 
 def get_access_token():

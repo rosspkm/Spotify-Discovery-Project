@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ArtistList from './lib/ArtistList.js';
 import axios from 'axios';
 
-function Save_Music({ artists }) {
+function Save_Music({ artists, handleArgs, handleErr }) {
     const [artistlst, setArtists] = useState(artists || []);
     const [artist, setArtist] = useState('');
 
@@ -32,8 +32,15 @@ function Save_Music({ artists }) {
     }
 
     async function sendData(body) {
-        const { data } = await axios.post("/save", { artists: body });
-        return data;
+        try {
+            const { data } = await axios.post("/save", { artists: body });
+            handleArgs(data);
+            return data;
+        }
+        catch (err) {
+            console.log(err)
+            handleErr(err.messsage);
+        }
     }
 
     return (
