@@ -42,7 +42,7 @@ function Save_Music({ artists }) {
             <input type="text" value={artist} onInput={(e) => setArtist(e.target.value)} />
             <button onClick={handleAddArtist}>Add Artist</button>
             <ArtistList artists={artistlst} delArtist={delArtist} />
-            <div> number of artists selected</div>
+            <br />
             <button onClick={() => { sendData(artistlst) }}>Submit</button>
         </div >
     );

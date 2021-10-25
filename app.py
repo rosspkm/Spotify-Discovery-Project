@@ -7,7 +7,7 @@ import json
 import random
 import requests
 
-from svr.models import User, Artist
+from svr.models import User
 from svr.genius import get_lyrics_link
 from svr.spotify import get_access_token, get_song_data
 
@@ -34,9 +34,9 @@ app.register_blueprint(bp)
 
 @app.route("/load_data", methods=["POST"])
 def load_data():
-    artists = Artist.query.filter_by(username=current_user.username).all()
-    artist_ids = [a.artist_id for a in artists]
-    has_artists_saved = len(artist_ids) > 0
+    artist_ids = User.query.filter_by(username=current_user.username).first().artists
+    has_artists_saved = len(artist_ids) > 0 or False
+    print(has_artists_saved)
     if has_artists_saved:
         artist_id = random.choice(artist_ids)
 
@@ -123,13 +123,9 @@ def save():
             flask.flash("Invalid artist ID entered")
             return artist
 
-        username = current_user.username
-        artist_ids = Artist.query.filter_by(username=current_user.username).all()
-        artist_ids = [a for a in artist_ids]
-        if artist not in artist_ids:
-            db.session.add(Artist(artist_id=artist, username=username))
-            db.session.commit()
-    return ""
+    User.query.filter_by(username=current_user.username).update({"artists": artists})
+    db.session.commit()
+    return flask.redirect(flask.url_for("bp.index"))
 
 
 def get_access_token():

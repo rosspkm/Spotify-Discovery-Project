@@ -1,7 +1,7 @@
 import React from "react";
 
 function Display_Music({ args }) {
-    if (args.has_artists_saved = true) {
+    if (args.has_artist_saved) {
         return (
             <div>
                 <h1>Song Explorer</h1>
@@ -11,8 +11,8 @@ function Display_Music({ args }) {
                     <img src={args.song_image_url} width={300} height={300} />
                 </div>
                 <div>
-                    <audio controls>
-                        <source src={args.preview_url} />
+                    <audio controls autoplay name="media">
+                        <source src={args.preview_url} type="audio/mpeg" />
                     </audio>
                 </div>
                 <a href={args.genius_url}> Click here to see lyrics! </a>
@@ -26,6 +26,5 @@ function Display_Music({ args }) {
         )
     }
 };
-
 
 export default Display_Music;
