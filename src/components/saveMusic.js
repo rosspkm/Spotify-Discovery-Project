@@ -33,13 +33,12 @@ function Save_Music({ artists, handleArgs, handleErr }) {
 
     async function sendData(body) {
         try {
-            const { data } = await axios.post("/save", { artists: body });
-            handleArgs(data);
-            return data;
+            const res = await axios.post("/save", { artists: body });
+            handleArgs(res);
+            return res.data;
         }
         catch (err) {
-            console.log(err)
-            handleErr(err.messsage);
+            handleErr("Invalid Artist ID");
         }
     }
 

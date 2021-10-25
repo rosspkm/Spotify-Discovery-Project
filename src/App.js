@@ -1,13 +1,18 @@
 import './App.css';
 import Display_Music from './components/displaySong';
 import Save_Music from './components/saveMusic';
+import Popup from './components/popUp';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function App() {
   const [args, setArgs] = useState({ artists: [] });
   const [err, setErr] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+  }
   useEffect(() => {
     axios.post("/load_data", {}).then(({ data }) => setArgs(data));
   }, []) // empty so this useEffect only works on app load instead of every rerender
@@ -31,11 +36,20 @@ function App() {
   //   {% endif %}
   // {% endwith %}
   return (
+
     <div>
-      {err && <div>{err}</div>}
+      {err && !isOpen &&
+        <Popup
+          content={<>
+            <b>ERROR</b>
+            <p>Invalid Artist ID</p>
+            <button>Close Popup</button>
+          </>}
+          handleClose={togglePopup}
+        />}
       <Display_Music args={args} />
       <Save_Music handleErr={handleErr} handleArgs={handleArgs} artists={args.artists} />
-    </div>
+    </div >
   )
 }
 

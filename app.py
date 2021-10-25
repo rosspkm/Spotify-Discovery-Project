@@ -120,8 +120,9 @@ def save():
             get_song_data(artist, access_token)
         except Exception:
             flask.flash("Invalid artist ID entered")
-            return "Invalid ID"
-
+            return flask.Response(
+                "Invalid artist", status=404, mimetype="application/json"
+            )
     User.query.filter_by(username=current_user.username).update({"artists": artists})
     db.session.commit()
     return load_data()
