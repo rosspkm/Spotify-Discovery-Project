@@ -34,7 +34,7 @@ function Save_Music({ artists, handleArgs, handleErr }) {
     async function sendData(body) {
         try {
             const res = await axios.post("/save", { artists: body });
-            handleArgs(res);
+            handleArgs(res.data);
             return res.data;
         }
         catch (err) {
