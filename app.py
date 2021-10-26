@@ -6,8 +6,7 @@ import json
 import random
 
 import flask
-from flask_login import login_user, current_user
-from flask_login.utils import login_required
+from flask_login import login_user, current_user, login_required, logout_user
 
 from __init__ import app, bp, db, login_manager
 from svr.models import User
@@ -142,6 +141,12 @@ def save():
     User.query.filter_by(username=current_user.username).update({"artists": artists})
     db.session.commit()
     return load_data()
+
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return flask.redirect("/")
 
 
 @login_manager.user_loader

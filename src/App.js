@@ -15,6 +15,7 @@ import axios from 'axios';
 import DisplayMusic from './components/displaySong';
 import SaveMusic from './components/saveMusic';
 import Popup from './components/popUp';
+import Logout from './components/Logout';
 
 function App() {
   const [args, setArgs] = useState({ artists: [] });
@@ -60,6 +61,7 @@ function App() {
           handleClose={togglePopup}
         />
       )}
+      <Logout />
       <DisplayMusic args={args} />
       <SaveMusic handleErr={handleErr} handleArgs={handleArgs} artists={args.artists} />
     </div>
