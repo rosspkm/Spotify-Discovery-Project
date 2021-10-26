@@ -1,29 +1,26 @@
-from __init__ import app, bp, db, login_manager
-import flask
-from flask_login import login_user, current_user
-from flask_login.utils import login_required
+"""
+Routes and main functionality of flask backend
+"""
 import os
 import json
 import random
-import requests
 
+import flask
+from flask_login import login_user, current_user
+from flask_login.utils import login_required
+
+from __init__ import app, bp, db, login_manager
 from svr.models import User
 from svr.genius import get_lyrics_link
-from svr.spotify import get_access_token, get_song_data
-
-
-MARKET = "US"
-ARTIST_IDS = [
-    "4UXqAaa6dQYAk18Lv7PEgX",  # FOB
-    "3jOstUTkEu2JkjvRdBA5Gu",  # Weezer
-    "7oPftvlwr6VrsViSDV7fJY",  # Green Day
-]
+from svr.spotify import get_access_token, get_song_data, validate_artist
 
 
 @bp.route("/index")
 @login_required
 def index():
-
+    """
+    Main index page function
+    """
     return flask.render_template(
         "index.html",
     )
@@ -34,6 +31,9 @@ app.register_blueprint(bp)
 
 @app.route("/load_data", methods=["POST"])
 def load_data():
+    """
+    A route specifically for loading data
+    """
     artist_ids = User.query.filter_by(username=current_user.username).first().artists
     has_artists_saved = len(artist_ids) > 0 or False
     if has_artists_saved:
@@ -54,7 +54,7 @@ def load_data():
             None,
             None,
         )
-    DATA = {
+    data = {
         "has_artist_saved": has_artists_saved,
         "song_name": song_name,
         "song_artist": song_artist,
@@ -63,11 +63,14 @@ def load_data():
         "genius_url": genius_url,
         "artists": artist_ids,
     }
-    return json.dumps(DATA)
+    return json.dumps(data)
 
 
 @app.route("/")
 def main():
+    """
+    Main route when loading up the app
+    """
     if current_user.is_authenticated:
         return flask.redirect(flask.url_for("bp.index"))
     return flask.redirect(flask.url_for("login"))
@@ -75,11 +78,17 @@ def main():
 
 @app.route("/signup")
 def signup():
+    """
+    Route for signup route
+    """
     return flask.render_template("signup.html")
 
 
 @app.route("/signup", methods=["POST"])
 def signup_post():
+    """
+    Route for posting the signup username to backend
+    """
     username = flask.request.form.get("username")
     user = User.query.filter_by(username=username).first()
     if user:
@@ -94,11 +103,17 @@ def signup_post():
 
 @app.route("/login")
 def login():
+    """
+    Route for loading the login page
+    """
     return flask.render_template("login.html")
 
 
 @app.route("/login", methods=["POST"])
 def login_post():
+    """
+    Route for posting the data to the backend
+    """
     username = flask.request.form.get("username")
     user = User.query.filter_by(username=username).first()
     if user:
@@ -111,15 +126,16 @@ def login_post():
 
 @app.route("/save", methods=["POST"])
 def save():
-
+    """
+    Route for saving the artists from the frontend to the backend
+    """
     artists = flask.request.json["artists"]
 
     for artist in artists:
         try:
             access_token = get_access_token()
-            get_song_data(artist, access_token)
-        except Exception:
-            flask.flash("Invalid artist ID entered")
+            validate_artist(artist, access_token)
+        except LookupError:
             return flask.Response(
                 "Invalid artist", status=404, mimetype="application/json"
             )
@@ -128,21 +144,12 @@ def save():
     return load_data()
 
 
-def get_access_token():
-    response = requests.post(
-        "https://accounts.spotify.com/api/token",
-        {
-            "grant_type": "client_credentials",
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET"),
-        },
-    )
-    return response.json()["access_token"]
-
-
 @login_manager.user_loader
 def load_user(user_name):
+    """
+    Function for loading a user from the database
+    """
     return User.query.get(user_name)
 
 
-app.run(host=os.getenv("IP", "0.0.0.0"), port=int(os.getenv("PORT", 8081)), debug=True)
+app.run(host=os.getenv("IP", "0.0.0.0"), port=int(os.getenv("PORT", 4141)), debug=True)

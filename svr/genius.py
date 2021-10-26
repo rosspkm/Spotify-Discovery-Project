@@ -1,3 +1,6 @@
+"""
+Function for getting the genius song link
+"""
 import os
 import requests
 

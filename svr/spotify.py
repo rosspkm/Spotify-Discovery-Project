@@ -6,19 +6,15 @@ import random
 
 
 def get_access_token():
-    auth = base64.standard_b64encode(
-        bytes(
-            f"{os.getenv('SPOTIFY_CLIENT_ID')}:{os.getenv('SPOTIFY_CLIENT_SECRET')}",
-            "utf-8",
-        )
-    ).decode("utf-8")
     response = requests.post(
         "https://accounts.spotify.com/api/token",
-        headers={"Authorization": f"Basic {auth}"},
-        data={"grant_type": "client_credentials"},
+        {
+            "grant_type": "client_credentials",
+            "client_id": os.getenv("CLIENT_ID"),
+            "client_secret": os.getenv("CLIENT_SECRET"),
+        },
     )
-    json_response = response.json()
-    return json_response["access_token"]
+    return response.json()["access_token"]
 
 
 def get_song_data(artist_id, access_token):
@@ -34,3 +30,12 @@ def get_song_data(artist_id, access_token):
     song_image_url = track_json["album"]["images"][0]["url"]
     preview_url = track_json["preview_url"]
     return (song_name, song_artist, song_image_url, preview_url)
+
+
+def validate_artist(artist_id, access_token):
+    response = requests.get(
+        f"https://api.spotify.com/v1/artists/{artist_id}",
+        headers={"Authorization": f"Bearer {access_token}"},
+        params={"market": "US"},
+    )
+    return response.json()["name"]

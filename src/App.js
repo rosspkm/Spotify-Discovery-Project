@@ -1,30 +1,41 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable arrow-body-style */
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable jsx-a11y/media-has-caption */
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable no-shadow */
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable no-undef */
 import './App.css';
-import Display_Music from './components/displaySong';
-import Save_Music from './components/saveMusic';
-import Popup from './components/popUp';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DisplayMusic from './components/displaySong';
+import SaveMusic from './components/saveMusic';
+import Popup from './components/popUp';
 
 function App() {
   const [args, setArgs] = useState({ artists: [] });
-  const [err, setErr] = useState("");
+  const [err, setErr] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
-  }
+  };
   useEffect(() => {
-    axios.post("/load_data", {}).then(({ data }) => setArgs(data));
-  }, []) // empty so this useEffect only works on app load instead of every rerender
+    axios.post('/load_data', {}).then(({ data }) => setArgs(data));
+  }, []); // empty so this useEffect only works on app load instead of every rerender
 
   const handleArgs = (args) => {
     setArgs(args);
-  }
+  };
 
   const handleErr = (err) => {
     setErr(err);
-    setTimeout(() => setErr(""), 4000);
-  }
+    setTimeout(() => setErr(''), 4000);
+  };
   // TODO: Implement your main page as a React component.
   //   {% with messages = get_flashed_messages() %}
   //   {% if messages %}
@@ -36,21 +47,23 @@ function App() {
   //   {% endif %}
   // {% endwith %}
   return (
-
     <div>
-      {err && !isOpen &&
+      {err && !isOpen && (
         <Popup
-          content={<>
-            <b>ERROR</b>
-            <p>Invalid Artist ID</p>
-            <button>Close Popup</button>
-          </>}
+          content={(
+            <>
+              <b>ERROR</b>
+              <p>Invalid Artist ID</p>
+              <button>Close Popup</button>
+            </>
+          )}
           handleClose={togglePopup}
-        />}
-      <Display_Music args={args} />
-      <Save_Music handleErr={handleErr} handleArgs={handleArgs} artists={args.artists} />
-    </div >
-  )
+        />
+      )}
+      <DisplayMusic args={args} />
+      <SaveMusic handleErr={handleErr} handleArgs={handleArgs} artists={args.artists} />
+    </div>
+  );
 }
 
 export default App;
